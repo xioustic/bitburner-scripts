@@ -1,4 +1,4 @@
-/** @param {import(".").NS} ns */
+/** @param {(import("/../NetscriptDefinitions").NS)} ns */
 export default function getStonks(ns) {
     let { stock } = ns;
     let symbols = stock.getSymbols();

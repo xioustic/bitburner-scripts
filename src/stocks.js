@@ -41,6 +41,13 @@ export async function main(ns) {
     reset: "\u001b[0m",
   };
   let datas = [...stonks].sort((a, b) => b.forecast - a.forecast)
+  if (ns.args.length && ns.args[0] === '--liquidate') {
+    for (let data of datas) {
+      ns.tprint('selling max shares ', data.ticker)
+      sellMaxStockShares(ns, data.ticker)
+    }
+    return
+  }
 
   let time = (new Date()).toString().split(' ')[4]
   for (let data of datas) {
@@ -50,7 +57,7 @@ export async function main(ns) {
         let bought = buyMaxStockShares(ns, data.ticker)
         let spent = (bought*data.ask) + 100000
         let fSpent = ns.nFormat(spent, '$0.00a')
-        if (bought) actionLog.push(`${time}: bought ${bought} shares of ${data.ticker} for ${fSpent}`)
+        if (bought) actionLog.push(`${time}: bought ${ns.nFormat(bought, '0,0')} shares of ${data.ticker} for ${fSpent}`)
       }
     }
     // stocks i have
@@ -62,14 +69,14 @@ export async function main(ns) {
                 let fGain = ns.nFormat(gain, '$0.00a')
                 let fProfit = ns.nFormat(data.totalProfit, '$0.00a')
                 if (data.totalProfit > 0) fProfit = '+' + fProfit
-                if (sold) actionLog.push(`${time}: sold ${sold} shares of ${data.ticker} for ${fGain} (${fProfit}) (profit)`)
+                if (sold) actionLog.push(`${time}: sold ${ns.nFormat(sold, '0,0')} shares of ${data.ticker} for ${fGain} (${fProfit}) (profit)`)
         } else if (data.forecast < PANIC_SELL_PCT) {
             let sold = sellMaxStockShares(ns, data.ticker)
             let gain = (sold * data.bid) - 100000
             let fGain = ns.nFormat(gain, '$0.00a')
             let fProfit = ns.nFormat(data.totalProfit, '$0.00a')
             if (data.totalProfit > 0) fProfit = '+' + fProfit
-            if (sold) actionLog.push(`${time}: sold ${sold} shares of ${data.ticker} for ${fGain} (${fProfit}) (panic)`)
+            if (sold) actionLog.push(`${time}: sold ${ns.nFormat(sold, '0,0')} shares of ${data.ticker} for ${fGain} (${fProfit}) (panic)`)
         }
     }
   }
@@ -116,6 +123,9 @@ export async function main(ns) {
   );
   let actionLogStr = actionLog.slice(-5)
   actionLogStr.reverse()
+  let totalWorth = datas.map(data => data.totalSaleAll).reduce((pv, cv) => pv+cv)
+  let totalWorthStr = ns.nFormat(totalWorth, '$0.00a')
+  actionLogStr.unshift(`Total NetWorth: ${totalWorthStr}`)
   actionLogStr = actionLogStr.join('\n')
 
   ns.print("\n", table, '\n', actionLogStr);

@@ -622,6 +622,7 @@ export async function main(ns) {
               target_db["hack"][hostname] = {
                 ...serverData,
                 lastUpdated: +new Date(),
+                playerHackLevel: ns.getHackingLevel()
               };
               didChangeDB = true;
             }
@@ -646,6 +647,7 @@ export async function main(ns) {
               target_db["grow"][hostname] = {
                 ...serverData,
                 lastUpdated: +new Date(),
+                playerHackLevel: ns.getHackingLevel()
               };
               didChangeDB = true;
             }

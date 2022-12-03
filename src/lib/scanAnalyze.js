@@ -4,7 +4,7 @@ import { buildASCIITable } from "utils";
 import { findPathReadable } from "lib/findPath";
 
 const HOME_RESERVE_RAM = 16
-/** @param {import(".").NS} ns */
+/** @param {(import("/../NetscriptDefinitions").NS)} ns */
 export async function scanAnalyze(ns, hostnames = undefined) {
   if (hostnames === undefined) hostnames = await getHostnames(ns);
   if (typeof hostnames === 'string') hostnames = [hostnames]
@@ -46,7 +46,7 @@ export async function scanAnalyze(ns, hostnames = undefined) {
     // getServer lookup
     let server = await ns.getServer(hostname)
     let hasBackdoor = server.backdoorInstalled
-    let isPurchased = server.isPurchased
+    let isPurchased = server.purchasedByPlayer
 
     // growth calculations
     // percentage of money growth we need to reach max money
@@ -144,6 +144,7 @@ export async function main(ns) {
             else if (arg === '--table') flag = 'table'
             else if (arg === '--sort') flag = 'sort'
             else if (arg === '--reverse') sort_reverse = true
+            else if (arg === '--purchased') results_list = results_list.filter(r => r.isPurchased)
             else target = arg
         }
         // results = arrToObj(results_list, 'hostname')

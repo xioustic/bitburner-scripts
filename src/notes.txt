@@ -1,0 +1,9 @@
+hack < grow < weaken times
+hackTime = growTime * 0.3125
+hackTime = weakenTime * 0.25
+weakenTime = hackTime * 4
+growTime = weakenTime * 0.8
+
+hacking causes hack difficulty to go up by 0.002 per thread
+growing causes hack difficulty to go up by 0.004 per thread
+weaken causes hack difficulty to go down by 0.05
